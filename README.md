@@ -21,7 +21,6 @@ to the `require` section of your composer.json.
 
  ## Usage
  
- 
 ```php
 'components' => [
    // ...
