@@ -59,7 +59,6 @@ Get all case;
      ); */
  ```
  
- 
 Get case; 
 ```php
     echo Yii::$app->morpher
