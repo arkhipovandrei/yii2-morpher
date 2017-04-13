@@ -1,5 +1,5 @@
 <?php 
-namespace arkhipovandrei\morpher;
+namespace sevenfloor\morpher;
 
 use yii\base\Component;
 use yii\base\Exception;

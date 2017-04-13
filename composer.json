@@ -1,10 +1,10 @@
 {
     "minimum-stability": "dev",
-    "name": "arkhipovandrei/yii2-morpher",
+    "name": "sevenfloor/yii2-morpher",
     "description": "Yii2 Morpher",
     "keywords": ["yii", "yii2", "yii 2", "morpher", "cases"],
     "type": "yii2-component",
-    "homepage": "https://github.com/arkhipovandrei/yii2-morpher",
+    "homepage": "https://github.com/SevenFloor/yii2-morpher",
     "license": "MIT",
     "authors": [
         {
@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "arkhipovandrei\\morpher\\": ""
+            "sevenfloor\\morpher\\": ""
         }
     }
 }
