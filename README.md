@@ -8,13 +8,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```
-composer require --prefer-dist arkhipovandrei/yii2-morpher
+composer require --prefer-dist sevenfloor/yii2-morpher
 ```
 
 or add
 
 ```json
-"arkhipovandrei/yii2-morpher": "*"
+"sevenfloor/yii2-morpher": "*"
 ```
 
 to the `require` section of your composer.json.
@@ -26,7 +26,7 @@ to the `require` section of your composer.json.
 'components' => [
    // ...
     'morpher' => [
-        'class' => 'arkhipovandrei\morpher\Morpher'
+        'class' => 'sevenfloor\morpher\Morpher'
     ]
     // ...
  ]
