@@ -35,25 +35,49 @@ to the `require` section of your composer.json.
 Get all case; 
 ```php
     Yii::$app->morpher
-        ->setQuery('Санкт-петербург')
+        ->setQuery('Санкт-Петербург')
     ->getData();
+
+     /*result 
+     Array
+     (
+         [Р] => Санкт-Петербурга
+         [Д] => Санкт-Петербургу
+         [В] => Санкт-Петербург
+         [Т] => Санкт-Петербургом
+         [П] => Санкт-Петербурге
+         [множественное] => Array
+             (
+                 [И] => Санкт-Петербурги
+                 [Р] => Санкт-Петербургов
+                 [Д] => Санкт-Петербургам
+                 [В] => Санкт-Петербурги
+                 [Т] => Санкт-Петербургами
+                 [П] => Санкт-Петербургах
+             )
+     
+     ); */
  ```
+ 
  
 Get case; 
 ```php
-    Yii::$app->morpher
-        ->setQuery('Санкт-петербург')
+    echo Yii::$app->morpher
+        ->setQuery('Санкт-Петербург')
         ->setCase(Morpher::PREPOSITIONAL)
     ->getData();
+    //result 'Санкт-Петербурге'
  ```
 
 Get plural case; 
 ```php
-    Yii::$app->morpher
-        ->setQuery('Санкт-петербург')
+    echo Yii::$app->morpher
+        ->setQuery('Санкт-Петербург')
         ->setCase(Morpher::PREPOSITIONAL)
         ->setPlural()
     ->getData();
+    
+    //result Санкт-Петербургах
  ```
 
 
