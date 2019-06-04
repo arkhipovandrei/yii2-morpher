@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-        "php": ">=7.0.27",
+        "php": ">=7.0",
         "yiisoft/yii2": "*",
         "yiisoft/yii2-httpclient": "^2.0"
     },
