@@ -19,7 +19,7 @@ or add
 
 to the `require` section of your composer.json.
 
- ## Usage
+ ## Использование
  
 ```php
 'components' => [
@@ -31,13 +31,14 @@ to the `require` section of your composer.json.
  ]
  ```
 
-Get all case; 
+Склонение
 ```php
-    Yii::$app->morpher
-        ->setQuery('Санкт-Петербург')
-    ->getData();
-
-     /*result 
+   $morpher = Yii::$app
+       ->morpher
+       ->declension( 'Санкт-Петербург');
+   
+/*result 
+    print_r($morpher->data);
      Array
      (
          [Р] => Санкт-Петербурга
@@ -56,26 +57,38 @@ Get all case;
              )
      
      ); */
+     
  ```
  
-Get case; 
+Получить Слово в нужном патяже и числе 
 ```php
-    echo Yii::$app->morpher
-        ->setQuery('Санкт-Петербург')
-        ->setCase(Morpher::PREPOSITIONAL)
-    ->getData();
-    //result 'Санкт-Петербурге'
+    $declensionCase = Yii::$app->morpher
+        ->declensionCase( 'Название', Yii::$app->morpher::PREPOSITIONAL, true);
+    //result Санкт-Петербургах
+```
+ 
+Пропись чисел и согласование с числом
+```php
+    $spell = Yii::$app
+        ->morpher
+        ->spell(100, 'рублей');
+ ```
+ 
+Склонение прилагательных по родам
+```php
+    $genders = Yii::$app
+        ->morpher
+        ->genders( 'рублей');
+ ```
+ 
+Функция образует прилагательные от названий городов и стран
+*  Москва – московский, Ростов – ростовский, Швеция – шведский
+```php
+    $adjectivize = Yii::$app
+        ->morpher
+        ->adjectivize( 'рублей');
  ```
 
-Get plural case; 
-```php
-    echo Yii::$app->morpher
-        ->setQuery('Санкт-Петербург')
-        ->setCase(Morpher::PREPOSITIONAL)
-        ->setPlural()
-    ->getData();
-    
-    //result Санкт-Петербургах
- ```
+
 
 
