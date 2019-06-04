@@ -8,7 +8,10 @@ use yii\helpers\ArrayHelper;
 use yii\httpclient\Client;
 use yii\web\HttpException;
 
-
+/**
+ * Class Morpher
+ * @package arkhipovandrei\morpher
+ */
 class Morpher extends Component
 {
     const GENETIVE = 'Р';
@@ -24,12 +27,10 @@ class Morpher extends Component
     public $baseUrl = 'https://ws3.morpher.ru';
     public $language = self::LANGUAGE_RU;
 
-    /** @var yii\httpclient\Client $client*/
+    /** @var yii\httpclient\Client $client */
     public $client;
     public $token = '8728f695-e24b-4ade-be4f-55b058c03101';
-    private $_query;
-    private $_plural = false;
-    private $_case = null;
+    public $data;
 
     public function init()
     {
@@ -37,54 +38,108 @@ class Morpher extends Component
             $this->client = (new Client([
                 'baseUrl' => "{$this->baseUrl}/{$this->language}"
             ]));
-
         }
     }
 
     /**
-     * @param $query
-     * @return $this
+     * Получаем слово в заданном падеже
+     * @param string $text
+     * @param string $case
+     * @param bool $plural
+     * @param string|null $flags
+     * @return string
      */
-    public function setQuery($query)
+    public function declensionCase(string $text, string $case, bool $plural = false, string $flags = null): string
     {
-        $this->_query = $query;
-        return $this;
+        return (string)ArrayHelper::getValue($this
+            ->declension($text, $flags)
+            ->data, $plural ? [self::PLURAL, $case] : [$case]);
     }
 
-    public function setPlural()
+    /**
+     * Склонение
+     *  'flags' = 'feminine,name'
+     * @param null $flags
+     * @return array|null
+     * @throws HttpException
+     */
+    public function declension(string $text, string $flags = null)
     {
-        $this->_plural = true;
+        $params = ['s' => $text];
+        if ($flags) {
+            $params['flags'] = $flags;
+        }
+        $this->data = $this->fetchData('declension', $params);
         return $this;
     }
 
     /**
-     * @param $case
-     * @return $this
+     * Пропись чисел и согласование с числом
+     * @param $n
+     * @param $unit
+     * @return array|null
+     * @throws HttpException
      */
-    public function setCase($case)
+    public function spell(float $n, string $unit)
     {
-        $this->_case = $case;
+        $this->data = $this->fetchData('spell', [
+            'n' => $n,
+            'unit' => $unit
+        ]);
         return $this;
     }
 
     /**
-     * @return array|string|null
-     * @throws Exception
+     * Склонение прилагательных по родам
+     * @return array|null
+     * @throws HttpException
      */
-    public function getData()
+    public function genders(string $text)
     {
-        $response = $this->fetchData();
+        $this->data = $this->fetchData('genders', ['s' => $text]);
+        return $this;
+    }
 
-        if (empty($response)) {
-            return null;
+    /**
+     * Функция образует прилагательные от названий городов и стран
+     *  Москва – московский, Ростов – ростовский, Швеция – шведский
+     * @return array|null
+     * @throws HttpException
+     */
+    public function adjectivize(string $text)
+    {
+        $this->data = $this->fetchData('adjectivize', ['s' => $text]);
+        return $this;
+    }
+
+    /**
+     * Запрос на сервер.
+     * @param $url
+     * @param $params
+     * @return mixed
+     */
+    private function fetchData($url, $params)
+    {
+        if ($this->token) {
+            $params['token'] = $this->token;
+        }
+        $response = $this->client
+            ->get($url, $params)
+            ->send();
+
+        if ($response->isOk) {
+            $data = $response->data;
+        } else {
+            throw new HttpException($response->statusCode, 'Morpher service error');
         }
 
-        if (key_exists('code', $response)) {
+        if (key_exists('code', $data)) {
 
-            $code = ArrayHelper::getValue($response, 'code');
-            $message = ArrayHelper::getValue($response, 'message');
+            $code = ArrayHelper::getValue($data, 'code');
+            $message = ArrayHelper::getValue($data, 'message');
 
             if (empty($message)) {
+
                 switch ($code) {
                     case 1 :
                         $message = 'Превышен лимит на количество запросов в сутки. Перейдите на следующий тарифный план.';
@@ -117,102 +172,9 @@ class Morpher extends Component
                         $message = 'Неизвестный тип ошибки попробуйте позже.';
                 }
             }
-
             throw new Exception("Morpher service error (code: {$code}): {$message}");
         }
-
-        if ($this->_case === null) {
-            return $response;
-        }
-
-        if ($this->_plural) {
-            return ArrayHelper::getValue($response, [self::PLURAL, $this->_case]);
-        }
-
-        return ArrayHelper::getValue($response, $this->_case);
+        return $data;
     }
 
-    public function getQuery()
-    {
-        return $this->_query;
-    }
-
-    public function getCase()
-    {
-        return $this->_case;
-    }
-
-    /**
-     * Склонение
-     *  'flags' = 'feminine,name'
-     * @param null $flags
-     * @return array|null
-     * @throws HttpException
-     */
-    public function declension($flags = null)
-    {
-        $params = ['s' => $this->_query];
-
-        if($flags) {
-            $params['flags'] = $flags;
-        }
-
-        return $this->fetchData('declension', $params);
-    }
-
-    /**
-     * Пропись чисел и согласование с числом
-     * @param $n
-     * @param $unit
-     * @return array|null
-     * @throws HttpException
-     */
-    public function spell($n, $unit)
-    {
-        return $this->fetchData('spell', [
-            'n' => $n,
-            'unit' => $unit
-        ]);
-    }
-
-    /**
-     * Склонение прилагательных по родам
-     * @return array|null
-     * @throws HttpException
-     */
-    public function genders()
-    {
-        return $this->fetchData('genders', ['s' => $this->_query]);
-    }
-
-    /**
-     * Функция образует прилагательные от названий городов и стран
-     *  Москва – московский, Ростов – ростовский, Швеция – шведский
-     * @return array|null
-     * @throws HttpException
-     */
-    public function adjectivize()
-    {
-        return $this->fetchData('adjectivize', ['s' => $this->_query]);
-    }
-
-    /**
-     * @return array|null
-     * @throws HttpException
-     */
-    private function fetchData($url, $params)
-    {
-        if($this->token) {
-            $params['token'] = $this->token;
-        }
-        $response = $this->client
-            ->get($url, $params)
-            ->send();
-
-        if ($response->isOk) {
-            return $response->data;
-        }
-
-        throw new HttpException($response->statusCode, 'Morpher service error');
-    }
 }
