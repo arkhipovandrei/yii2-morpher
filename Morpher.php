@@ -29,7 +29,7 @@ class Morpher extends Component
 
     /** @var yii\httpclient\Client $client */
     public $client;
-    public $token = '8728f695-e24b-4ade-be4f-55b058c03101';
+    public $token;
     public $data;
 
     public function init()
