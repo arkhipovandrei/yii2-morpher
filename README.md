@@ -1,23 +1,18 @@
 # Yii2-morpher
 
-Installation
+Установка
 ------------
-
-The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
-
-Either run
-
 ```
 composer require --prefer-dist arkhipovandrei/yii2-morpher
 ```
 
-or add
+или добваить 
 
 ```json
 "arkhipovandrei/yii2-morpher": "*"
 ```
 
-to the `require` section of your composer.json.
+в секцию  `require` в ваш composer.json.
 
  ## Использование
  
